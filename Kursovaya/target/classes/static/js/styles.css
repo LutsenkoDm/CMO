@@ -1,0 +1,32 @@
+html { overflow:  hidden; }
+.scrollTableDevices {
+    height: 310px;
+    width: 110.8%;
+    overflow-y: scroll;
+}
+
+.scrollTableSources {
+    height: 383px;
+    width: 101%;
+    overflow-x: scroll;
+    overflow-y: scroll;
+}
+
+body {
+    background:
+    linear-gradient(-45deg, #ee7752, #a95f7b, #3d9b32, #d26558);
+    background-size: 400% 400%;
+    animation: gradient 60s ease infinite;
+}
+
+@keyframes gradient {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
