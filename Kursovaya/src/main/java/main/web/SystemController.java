@@ -1,6 +1,7 @@
 package main.web;
 
-import main.functional.*;
+import main.functional.Controller;
+import main.functional.State;
 import main.functional.components.Device;
 import main.functional.components.Source;
 import main.functional.configuration.BufferConfiguration;
@@ -26,9 +27,9 @@ public class SystemController {
     public SystemController(SourcesConfiguration sourcesConfiguration, BufferConfiguration bufferConfiguration,
                             DevicesConfiguration devicesConfiguration, SystemConfiguration systemConfiguration, Controller controller) {
         this.sourcesConfiguration = sourcesConfiguration;
-        this.bufferConfiguration  = bufferConfiguration;
+        this.bufferConfiguration = bufferConfiguration;
         this.devicesConfiguration = devicesConfiguration;
-        this.systemConfiguration  = systemConfiguration;
+        this.systemConfiguration = systemConfiguration;
         this.controller = controller;
     }
 
@@ -55,6 +56,11 @@ public class SystemController {
         systemConfiguration.setSourceMaxGeneratedRequests(newSystemConfiguration.getSourceMaxGeneratedRequests());
     }
 
+    @PostMapping(value = "/init")
+    public void init() {
+        controller.init();
+    }
+
     @PostMapping(value = "/run")
     public void run() {
         controller.setSourcesConfiguration(sourcesConfiguration);
@@ -62,7 +68,6 @@ public class SystemController {
         controller.setDevicesConfiguration(devicesConfiguration);
         controller.setSystemConfiguration(systemConfiguration);
         controller.run();
-        controller.printInfo();
     }
 
     @GetMapping(value = "/getSources")
@@ -73,5 +78,10 @@ public class SystemController {
     @GetMapping(value = "/getDevices")
     public ResponseEntity<List<Device>> getDevices() {
         return new ResponseEntity<>(controller.getDevices(), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/getNextState")
+    public ResponseEntity<State> getNextState() {
+        return new ResponseEntity<>(controller.getNextState(), HttpStatus.OK);
     }
 }
