@@ -57,12 +57,29 @@ public class Controller {
                 }
             }
         }
+        takeAllRequestsFromBufferToDevices();
         Device maxReleaseTimeDevice = devices.stream().max(Comparator.comparing(Device::getReleaseTime)).get();
         for (Device device : devices) {
             device.addFreeTime(maxReleaseTimeDevice.getReleaseTime() - device.getReleaseTime());
             device.setReleaseTime(maxReleaseTimeDevice.getReleaseTime());
         }
-        buffer.clear();
+    }
+
+    private void takeAllRequestsFromBufferToDevices() {
+        while (!buffer.isEmpty()) {
+            for (Device device : devices) {
+                double lastInBufferRequestBeginTime = buffer.getLast().getBeginTime();
+                double deviceReleaseTime = device.getReleaseTime();
+                if (lastInBufferRequestBeginTime >= device.getReleaseTime()) {
+                    device.addFreeTime(lastInBufferRequestBeginTime - deviceReleaseTime);
+                    device.setStartTime(lastInBufferRequestBeginTime);
+                } else {
+                    device.setStartTime(deviceReleaseTime);
+                }
+                device.takeRequest(buffer.removeLast());
+                break;
+            }
+        }
     }
 
     public void init() {
@@ -83,7 +100,6 @@ public class Controller {
         boolean isRejected = buffer.full();
         buffer.add(requests.first());
         Request earliestRequest = buffer.getLast();
-        int sourceNumber = earliestRequest.getSource().getNumber();
         double earliestRequestBeginTime = earliestRequest.getBeginTime();
         requests.remove(earliestRequest);
         requests.add(earliestRequest.getSource().generateRequest());
@@ -104,7 +120,7 @@ public class Controller {
                 break;
             }
         }
-        return new State(buffer.getNumberOfRequests(), sourceNumber, deviceNumber, isRejected);
+        return new State(buffer.getNumberOfRequests(), earliestRequest.getSource().getNumber(), deviceNumber, isRejected);
     }
 
     public void printInfo() {
