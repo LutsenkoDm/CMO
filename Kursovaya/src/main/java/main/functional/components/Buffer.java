@@ -64,4 +64,8 @@ public class Buffer {
     public void clear() {
         buffer.clear();
     }
+    
+    public boolean isEmpty() {
+        return buffer.isEmpty();
+    }
 }
